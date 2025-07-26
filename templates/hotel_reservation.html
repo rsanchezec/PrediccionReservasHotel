@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOTEL RESERVATION PREDICTION ❤️</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .main-container {
+            padding: 2rem 0;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px 20px 0 0 !important;
+            padding: 1.5rem;
+            text-align: center;
+            border: none;
+        }
+        
+        .card-header h2 {
+            margin: 0;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .btn-predict {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .result-card {
+            margin-top: 2rem;
+            border-radius: 15px;
+            border: none;
+        }
+        
+        .result-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+        }
+        
+        .result-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .input-group-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px 0 0 10px;
+        }
+        
+        .form-floating > .form-control, .form-floating > .form-select {
+            border-radius: 10px;
+        }
+        
+        .hotel-icon {
+            font-size: 2rem;
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .card {
+                margin: 0 0.5rem;
+            }
+        }
+        
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .floating-elements::before,
+        .floating-elements::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-elements::before {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .floating-elements::after {
+            width: 150px;
+            height: 150px;
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="floating-elements"></div>
+    
+    <div class="container main-container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>
+                            <i class="bi bi-building hotel-icon"></i>
+                            Hotel Reservation Prediction
+                        </h2>
+                        <p class="mb-0 mt-2">Predice si un cliente cancelará su reserva</p>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <form method="POST">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        <input type="number" class="form-control" id="lead_time" name="lead_time" placeholder="Lead Time" required>
+                                        <label for="lead_time">
+                                            <i class="bi bi-clock me-2"></i>Lead Time (días)
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        <input type="number" class="form-control" id="no_of_special_request" name="no_of_special_request" placeholder="Special Requests" required>
+                                        <label for="no_of_special_request">
+                                            <i class="bi bi-star me-2"></i>Solicitudes Especiales
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        <input type="number" step="0.01" class="form-control" id="avg_price_per_room" name="avg_price_per_room" placeholder="Price" required>
+                                        <label for="avg_price_per_room">
+                                            <i class="bi bi-currency-dollar me-2"></i>Precio Promedio por Habitación
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="arrival_month" name="arrival_month" required>
+                                            <option value="">Seleccionar mes...</option>
+                                            <option value="1">Enero</option>
+                                            <option value="2">Febrero</option>
+                                            <option value="3">Marzo</option>
+                                            <option value="4">Abril</option>
+                                            <option value="5">Mayo</option>
+                                            <option value="6">Junio</option>
+                                            <option value="7">Julio</option>
+                                            <option value="8">Agosto</option>
+                                            <option value="9">Septiembre</option>
+                                            <option value="10">Octubre</option>
+                                            <option value="11">Noviembre</option>
+                                            <option value="12">Diciembre</option>
+                                        </select>
+                                        <label for="arrival_month">
+                                            <i class="bi bi-calendar-month me-2"></i>Mes de Llegada
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="arrival_date" name="arrival_date" required>
+                                            <option value="">Seleccionar día...</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                            <option value="8">8</option>
+                                            <option value="9">9</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                            <option value="13">13</option>
+                                            <option value="14">14</option>
+                                            <option value="15">15</option>
+                                            <option value="16">16</option>
+                                            <option value="17">17</option>
+                                            <option value="18">18</option>
+                                            <option value="19">19</option>
+                                            <option value="20">20</option>
+                                            <option value="21">21</option>
+                                            <option value="22">22</option>
+                                            <option value="23">23</option>
+                                            <option value="24">24</option>
+                                            <option value="25">25</option>
+                                            <option value="26">26</option>
+                                            <option value="27">27</option>
+                                            <option value="28">28</option>
+                                            <option value="29">29</option>
+                                            <option value="30">30</option>
+                                            <option value="31">31</option>
+                                        </select>
+                                        <label for="arrival_date">
+                                            <i class="bi bi-calendar-day me-2"></i>Día de Llegada
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="market_segment_type" name="market_segment_type" required>
+                                            <option value="">Seleccionar segmento...</option>
+                                            <option value="0">Aviación</option>
+                                            <option value="1">Cortesía</option>
+                                            <option value="2">Corporativo</option>
+                                            <option value="3">Offline</option>
+                                            <option value="4">Online</option>
+                                        </select>
+                                        <label for="market_segment_type">
+                                            <i class="bi bi-graph-up me-2"></i>Segmento de Mercado
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        <input type="number" class="form-control" id="no_of_week_nights" name="no_of_week_nights" placeholder="Week Nights" required>
+                                        <label for="no_of_week_nights">
+                                            <i class="bi bi-moon me-2"></i>Noches Entre Semana
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        <input type="number" class="form-control" id="no_of_weekend_nights" name="no_of_weekend_nights" placeholder="Weekend Nights" required>
+                                        <label for="no_of_weekend_nights">
+                                            <i class="bi bi-sun me-2"></i>Noches de Fin de Semana
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="type_of_meal_plan" name="type_of_meal_plan" required>
+                                            <option value="">Seleccionar plan...</option>
+                                            <option value="0">Plan de Comida 1</option>
+                                            <option value="1">Plan de Comida 2</option>
+                                            <option value="2">Plan de Comida 3</option>
+                                            <option value="3">Sin Seleccionar</option>
+                                        </select>
+                                        <label for="type_of_meal_plan">
+                                            <i class="bi bi-cup-hot me-2"></i>Plan de Comida
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="room_type_reserved" name="room_type_reserved" required>
+                                            <option value="">Seleccionar habitación...</option>
+                                            <option value="0">Tipo de Habitación 1</option>
+                                            <option value="1">Tipo de Habitación 2</option>
+                                            <option value="2">Tipo de Habitación 3</option>
+                                            <option value="3">Tipo de Habitación 4</option>
+                                            <option value="4">Tipo de Habitación 5</option>
+                                            <option value="5">Tipo de Habitación 6</option>
+                                            <option value="6">Tipo de Habitación 7</option>
+                                        </select>
+                                        <label for="room_type_reserved">
+                                            <i class="bi bi-door-open me-2"></i>Tipo de Habitación
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-predict btn-lg">
+                                    <i class="bi bi-magic me-2"></i>
+                                    Realizar Predicción
+                                </button>
+                            </div>
+                        </form>
+
+                        {% if prediction is not none %}
+                        <div class="result-card card mt-4 {% if prediction == 0 %}result-warning{% else %}result-success{% endif %}">
+                            <div class="card-body text-center p-4">
+                                {% if prediction == 0 %}
+                                <i class="bi bi-x-circle-fill" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                                <h4>¡Atención! El cliente probablemente cancelará su reserva</h4>
+                                <p class="mb-0">Se recomienda tomar medidas preventivas para retener al cliente.</p>
+                                {% elif prediction == 1 %}
+                                <i class="bi bi-check-circle-fill" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                                <h4>¡Excelente! El cliente mantendrá su reserva</h4>
+                                <p class="mb-0">La probabilidad de cancelación es baja. La reserva se mantendrá.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Animación suave para el scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Efectos de hover para los inputs
+        document.querySelectorAll('.form-control, .form-select').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+                this.parentElement.style.transition = 'all 0.3s ease';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>

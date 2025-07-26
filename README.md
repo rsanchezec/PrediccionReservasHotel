@@ -30,7 +30,10 @@ Este proyecto es un pipeline de MLOps de extremo a extremo para predecir cancela
 │   ├── data_ingestion.py
 │   ├── data_preprocessing.py
 │   └── model_training.py
+├── templates/
+│   └── hotel_reservation.html
 ├── .gitignore
+├── application.py
 ├── README.md
 ├── requirements.txt
 └── setup.py
@@ -90,3 +93,19 @@ Para ejecutar el pipeline de entrenamiento, ejecute el siguiente comando:
 ```bash
 python pipeline/training_pipeline.py
 ```
+
+## Aplicación Web
+
+Este proyecto también incluye una aplicación web simple construida con Flask para interactuar con el modelo entrenado.
+
+*   **`application.py`**: Este script contiene la aplicación Flask. Carga el modelo `lgbm_model.pkl` entrenado y lo sirve a través de una API REST. La aplicación renderiza la interfaz de usuario y realiza predicciones basadas en la entrada del usuario.
+
+*   **`templates/hotel_reservation.html`**: Este archivo HTML define la estructura de la interfaz de usuario para la aplicación de predicción de reservas de hotel. Incluye un formulario donde los usuarios pueden ingresar características como el tiempo de espera, el número de solicitudes especiales y el precio promedio por habitación. La predicción del modelo (ya sea que un cliente cancele o no) se muestra dinámicamente en la página.
+
+Para ejecutar la aplicación web, use el siguiente comando:
+
+```bash
+python application.py
+```
+
+Una vez que la aplicación se esté ejecutando, abra su navegador web y vaya a `http://localhost:8080` para acceder a la interfaz de usuario.
